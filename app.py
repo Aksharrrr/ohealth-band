@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-import base64
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="O-Health Band",
@@ -22,6 +22,16 @@ st.markdown(
         [data-testid="stHeader"] {display: none;}
         [data-testid="stBottom"] {display: none;}
         iframe {border: none;}
+        [data-testid="stVerticalBlockBorderWrapper"] {padding: 0 !important;}
+        [data-testid="element-container"] {padding: 0 !important; margin: 0 !important;}
+        .element-container iframe {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 999 !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -30,12 +40,4 @@ st.markdown(
 html_path = Path(__file__).parent / "index.html"
 html_content = html_path.read_text(encoding="utf-8")
 
-# Encode HTML as base64 data URI to avoid Streamlit component size limits
-html_b64 = base64.b64encode(html_content.encode("utf-8")).decode("utf-8")
-
-st.markdown(
-    f'<iframe src="data:text/html;base64,{html_b64}" '
-    f'style="width:100%;height:100vh;border:none;position:fixed;top:0;left:0;z-index:999;" '
-    f'allowfullscreen></iframe>',
-    unsafe_allow_html=True,
-)
+components.html(html_content, height=900, scrolling=True)
