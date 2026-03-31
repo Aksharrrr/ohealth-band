@@ -345,6 +345,22 @@
     function handleSubmit(e) {
       e.preventDefault();
       if (!input.value) return;
+      // Validate password
+      if (input.value !== 'letsstart') {
+        const wrap = document.querySelector('.gate-input-wrap');
+        wrap.classList.add('has-error');
+        let err = document.querySelector('.gate-error');
+        if (!err) {
+          err = document.createElement('div');
+          err.className = 'gate-error';
+          wrap.parentNode.insertBefore(err, wrap.nextSibling);
+        }
+        err.textContent = 'Incorrect password. Try again.';
+        input.value = '';
+        btn.disabled = true;
+        setTimeout(() => wrap.classList.remove('has-error'), 2000);
+        return;
+      }
       // Show loading state
       btn.innerHTML = '<div class="gate-spinner"></div>';
       btn.disabled = true;
