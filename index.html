@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O-Health Band</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .gate-container {
+      position: fixed;
+      inset: 0;
+      background: rgb(15, 16, 20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: "DM Sans", sans-serif;
+    }
+
+    .gate-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .gate-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+    }
+
+    .gate-orb-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(212, 162, 74, 0.08) 0%, transparent 70%);
+      top: -10%;
+      right: -5%;
+      animation: orbFloat1 18s ease-in-out infinite;
+    }
+
+    .gate-orb-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(196, 30, 42, 0.06) 0%, transparent 70%);
+      bottom: -15%;
+      left: -5%;
+      animation: orbFloat2 22s ease-in-out infinite;
+    }
+
+    .gate-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 32px;
+      max-width: 440px;
+      width: 100%;
+      animation: fadeSlideUp 0.8s ease-out;
+    }
+
+    .gate-logo {
+      margin-bottom: 32px;
+      animation: lockPulse 3s ease-in-out infinite;
+    }
+
+    .gate-lock-icon {
+      width: 72px;
+      height: 72px;
+    }
+
+    .gate-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: rgb(242, 240, 236);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .gate-title-accent {
+      color: rgb(212, 162, 74);
+    }
+
+    .gate-subtitle {
+      font-size: 0.85rem;
+      color: rgb(104, 110, 128);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+
+    .gate-hint {
+      font-size: 0.9rem;
+      color: rgb(138, 143, 158);
+      margin-bottom: 20px;
+    }
+
+    .gate-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .gate-input-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .gate-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgb(22, 24, 32);
+      border: 1px solid rgb(40, 44, 58);
+      border-radius: 12px;
+      color: rgb(242, 240, 236);
+      font-size: 1rem;
+      font-family: "DM Sans", sans-serif;
+      letter-spacing: 2px;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .gate-input::placeholder {
+      color: rgb(74, 78, 92);
+      letter-spacing: 1px;
+    }
+
+    .gate-input:focus {
+      border-color: rgb(212, 162, 74);
+      box-shadow: 0 0 0 3px rgba(212, 162, 74, 0.1), 0 0 30px rgba(212, 162, 74, 0.05);
+    }
+
+    .gate-input-glow {
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgb(212, 162, 74), transparent);
+      transition: width 0.4s;
+      pointer-events: none;
+    }
+
+    .gate-input:focus ~ .gate-input-glow {
+      width: 80%;
+    }
+
+    .has-error .gate-input {
+      border-color: rgb(196, 30, 42);
+      box-shadow: 0 0 0 3px rgba(196, 30, 42, 0.1);
+    }
+
+    .gate-error {
+      color: rgb(230, 48, 64);
+      font-size: 0.82rem;
+      letter-spacing: 0.5px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .gate-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 48px;
+      background: linear-gradient(135deg, rgb(212, 162, 74), rgb(184, 135, 46));
+      border: none;
+      border-radius: 50px;
+      color: rgb(15, 16, 20);
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s, opacity 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gate-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(212, 162, 74, 0.25);
+    }
+
+    .gate-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .gate-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .gate-btn-arrow {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    .gate-btn:hover:not(:disabled) .gate-btn-arrow {
+      transform: translateX(3px);
+    }
+
+    .gate-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgb(15, 16, 20);
+      border-right-color: rgba(15, 16, 20, 0.3);
+      border-bottom-color: rgba(15, 16, 20, 0.3);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    .gate-footer-line {
+      margin-top: 56px;
+      width: 100%;
+      max-width: 340px;
+      opacity: 0.6;
+    }
+
+    .gate-heartbeat {
+      width: 100%;
+      height: 20px;
+      animation: heartbeatScroll 8s linear infinite;
+    }
+
+    /* Keyframes */
+    @keyframes orbFloat1 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-40px, 30px); }
+    }
+
+    @keyframes orbFloat2 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -40px); }
+    }
+
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(24px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes lockPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-4px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes heartbeatScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50px); }
+    }
+
+    @keyframes claude-pulse {
+      0% { box-shadow: inset 0 0 10px rgba(217, 119, 87, 0.5), inset 0 0 20px rgba(217, 119, 87, 0.3), inset 0 0 30px rgba(217, 119, 87, 0.1); }
+      50% { box-shadow: inset 0 0 15px rgba(217, 119, 87, 0.7), inset 0 0 25px rgba(217, 119, 87, 0.5), inset 0 0 35px rgba(217, 119, 87, 0.2); }
+      100% { box-shadow: inset 0 0 10px rgba(217, 119, 87, 0.5), inset 0 0 20px rgba(217, 119, 87, 0.3), inset 0 0 30px rgba(217, 119, 87, 0.1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .gate-title { font-size: 1.8rem; }
+      .gate-subtitle { font-size: 0.72rem; letter-spacing: 2px; }
+      .gate-content { padding: 32px 20px; }
+      .gate-lock-icon { width: 56px; height: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="gate-container">
+    <canvas id="gate-canvas" class="gate-canvas"></canvas>
+    <div class="gate-orb gate-orb-1"></div>
+    <div class="gate-orb gate-orb-2"></div>
+    <div class="gate-content">
+      <div class="gate-logo">
+        <svg viewBox="0 0 60 60" class="gate-lock-icon">
+          <circle cx="30" cy="30" r="28" stroke="#d4a24a" stroke-width="1.5" fill="none" opacity="0.3"></circle>
+          <circle cx="30" cy="30" r="20" stroke="#d4a24a" stroke-width="1" fill="none" opacity="0.15"></circle>
+          <path d="M22 28V24a8 8 0 0116 0v4" stroke="#d4a24a" stroke-width="2" fill="none" stroke-linecap="round"></path>
+          <rect x="19" y="28" width="22" height="16" rx="3" fill="#1c1f2a" stroke="#d4a24a" stroke-width="1.5"></rect>
+          <circle cx="30" cy="35" r="2.5" fill="#d4a24a"></circle>
+          <line x1="30" y1="37.5" x2="30" y2="41" stroke="#d4a24a" stroke-width="2" stroke-linecap="round"></line>
+        </svg>
+      </div>
+      <h1 class="gate-title"><span class="gate-title-accent">O-Health</span> Band</h1>
+      <div class="gate-subtitle">Clinical Grade Sportstech Wearable</div>
+      <div class="gate-hint">Enter password to continue</div>
+      <form class="gate-form" onsubmit="return false;">
+        <div class="gate-input-wrap">
+          <input type="password" placeholder="Password" class="gate-input" autocomplete="off">
+          <div class="gate-input-glow"></div>
+        </div>
+        <button type="submit" disabled class="gate-btn">
+          <span>Enter</span>
+          <svg viewBox="0 0 20 20" fill="none" class="gate-btn-arrow">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </form>
+      <div class="gate-footer-line">
+        <svg viewBox="0 0 600 30" preserveAspectRatio="none" class="gate-heartbeat">
+          <path d="M0 15 L50 15 L55 15 L60 5 L65 25 L70 10 L75 20 L80 15 L150 15 L155 15 L160 5 L165 25 L170 10 L175 20 L180 15 L250 15 L255 15 L260 5 L265 25 L270 10 L275 20 L280 15 L350 15 L355 15 L360 5 L365 25 L370 10 L375 20 L380 15 L450 15 L455 15 L460 5 L465 25 L470 10 L475 20 L480 15 L550 15 L555 15 L560 5 L565 25 L570 10 L575 20 L580 15 L600 15" stroke="#c41e2a" stroke-width="1.5" fill="none" opacity="0.4"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Enable/disable button based on input
+    const input = document.querySelector('.gate-input');
+    const btn = document.querySelector('.gate-btn');
+    input.addEventListener('input', () => {
+      btn.disabled = input.value.length === 0;
+    });
+
+    // Canvas particle effect
+    const canvas = document.getElementById('gate-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function createParticle() {
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 1.5 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.5 + 0.1,
+      };
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+      for (let i = 0; i < count; i++) {
+        particles.push(createParticle());
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212, 162, 74, ${p.opacity})`;
+        ctx.fill();
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+      });
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(212, 162, 74, ${0.06 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(drawParticles);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initParticles();
+    });
+
+    resizeCanvas();
+    initParticles();
+    drawParticles();
+  </script>
+</body>
+</html>
