@@ -314,7 +314,7 @@
       <h1 class="gate-title"><span class="gate-title-accent">O-Health</span> Band</h1>
       <div class="gate-subtitle">Clinical Grade Sportstech Wearable</div>
       <div class="gate-hint">Enter password to continue</div>
-      <form class="gate-form" onsubmit="return false;">
+      <form class="gate-form" onsubmit="handleSubmit(event)">
         <div class="gate-input-wrap">
           <input type="password" placeholder="Password" class="gate-input" autocomplete="off">
           <div class="gate-input-glow"></div>
@@ -341,6 +341,44 @@
     input.addEventListener('input', () => {
       btn.disabled = input.value.length === 0;
     });
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      if (!input.value) return;
+      // Show loading state
+      btn.innerHTML = '<div class="gate-spinner"></div>';
+      btn.disabled = true;
+      // Transition to welcome screen
+      setTimeout(() => {
+        document.querySelector('.gate-content').style.animation = 'none';
+        document.querySelector('.gate-content').style.transition = 'opacity 0.5s, transform 0.5s';
+        document.querySelector('.gate-content').style.opacity = '0';
+        document.querySelector('.gate-content').style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+          document.querySelector('.gate-content').innerHTML = `
+            <div class="gate-logo">
+              <svg viewBox="0 0 60 60" class="gate-lock-icon" style="opacity:0.7">
+                <circle cx="30" cy="30" r="28" stroke="#d4a24a" stroke-width="1.5" fill="none" opacity="0.3"></circle>
+                <circle cx="30" cy="30" r="20" stroke="#d4a24a" stroke-width="1" fill="none" opacity="0.15"></circle>
+                <path d="M20 22l8 8 12-16" stroke="#d4a24a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <h1 class="gate-title" style="font-size:2rem;margin-bottom:12px;">Welcome to <span class="gate-title-accent">O-Health</span></h1>
+            <div class="gate-subtitle" style="margin-bottom:24px;">Access Granted</div>
+            <div style="color:rgb(138,143,158);font-size:0.9rem;text-align:center;line-height:1.6;max-width:360px;">
+              Your clinical-grade sportstech wearable dashboard is loading. Monitor your vitals, track performance, and optimize recovery.
+            </div>
+            <div class="gate-footer-line">
+              <svg viewBox="0 0 600 30" preserveAspectRatio="none" class="gate-heartbeat">
+                <path d="M0 15 L50 15 L55 15 L60 5 L65 25 L70 10 L75 20 L80 15 L150 15 L155 15 L160 5 L165 25 L170 10 L175 20 L180 15 L250 15 L255 15 L260 5 L265 25 L270 10 L275 20 L280 15 L350 15 L355 15 L360 5 L365 25 L370 10 L375 20 L380 15 L450 15 L455 15 L460 5 L465 25 L470 10 L475 20 L480 15 L550 15 L555 15 L560 5 L565 25 L570 10 L575 20 L580 15 L600 15" stroke="#d4a24a" stroke-width="1.5" fill="none" opacity="0.5"></path>
+              </svg>
+            </div>
+          `;
+          document.querySelector('.gate-content').style.opacity = '1';
+          document.querySelector('.gate-content').style.transform = 'translateY(0)';
+        }, 500);
+      }, 1200);
+    }
 
     // Canvas particle effect
     const canvas = document.getElementById('gate-canvas');
