@@ -28,4 +28,4 @@ st.markdown(
 html_path = Path(__file__).parent / "index.html"
 html_content = html_path.read_text(encoding="utf-8")
 
-st.components.v1.html(html_content, height=700, scrolling=False)
+st.components.v1.html(html_content, height=8000, scrolling=True)
