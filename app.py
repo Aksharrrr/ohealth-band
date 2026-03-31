@@ -40,4 +40,48 @@ st.markdown(
 html_path = Path(__file__).parent / "index.html"
 html_content = html_path.read_text(encoding="utf-8")
 
+# Inject a script to force-play videos when they scroll into view
+# (browsers may block autoplay inside iframes until the element is visible)
+video_fix = """
+<script>
+(function() {
+  function setupVideoAutoplay() {
+    var videos = document.querySelectorAll('video');
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.play().catch(function(){});
+        }
+      });
+    }, {threshold: 0.1});
+    videos.forEach(function(v) { observer.observe(v); });
+    // Also force-play on any scroll
+    window.addEventListener('scroll', function() {
+      videos.forEach(function(v) {
+        var rect = v.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0 && v.paused) {
+          v.play().catch(function(){});
+        }
+      });
+    }, {passive: true});
+  }
+  // Run setup now and also after gate dismissal (poll for gate hidden)
+  setupVideoAutoplay();
+  var gateCheck = setInterval(function() {
+    var gate = document.getElementById('gate-overlay');
+    if (!gate || gate.style.display === 'none' || gate.classList.contains('hidden')) {
+      clearInterval(gateCheck);
+      // Re-trigger play on all videos after gate is gone
+      setTimeout(function() {
+        document.querySelectorAll('video').forEach(function(v) {
+          v.play().catch(function(){});
+        });
+      }, 500);
+    }
+  }, 300);
+})();
+</script>
+"""
+html_content = html_content.replace("</body>", video_fix + "</body>")
+
 components.html(html_content, height=900, scrolling=True)
