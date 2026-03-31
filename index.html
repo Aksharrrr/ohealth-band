@@ -392,6 +392,80 @@
           `;
           document.querySelector('.gate-content').style.opacity = '1';
           document.querySelector('.gate-content').style.transform = 'translateY(0)';
+          // After welcome screen, transition to dashboard
+          setTimeout(() => {
+            document.querySelector('.gate-content').style.opacity = '0';
+            document.querySelector('.gate-content').style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+              document.querySelector('.gate-container').innerHTML = `
+                <canvas id="gate-canvas" class="gate-canvas"></canvas>
+                <div class="gate-orb gate-orb-1"></div>
+                <div class="gate-orb gate-orb-2"></div>
+                <div class="gate-content" style="max-width:800px;opacity:0;transform:translateY(24px);transition:opacity 0.6s,transform 0.6s;">
+                  <h1 class="gate-title" style="font-size:1.6rem;margin-bottom:6px;"><span class="gate-title-accent">O-Health</span> Dashboard</h1>
+                  <div class="gate-subtitle" style="margin-bottom:32px;">Real-Time Vitals</div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;width:100%;">
+                    <div style="background:rgb(22,24,32);border:1px solid rgb(40,44,58);border-radius:16px;padding:24px 20px;text-align:center;">
+                      <div style="font-size:0.72rem;color:rgb(104,110,128);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Heart Rate</div>
+                      <div style="font-size:2.2rem;font-weight:700;color:rgb(196,30,42);">72</div>
+                      <div style="font-size:0.75rem;color:rgb(138,143,158);">BPM</div>
+                    </div>
+                    <div style="background:rgb(22,24,32);border:1px solid rgb(40,44,58);border-radius:16px;padding:24px 20px;text-align:center;">
+                      <div style="font-size:0.72rem;color:rgb(104,110,128);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">SpO2</div>
+                      <div style="font-size:2.2rem;font-weight:700;color:rgb(212,162,74);">98</div>
+                      <div style="font-size:0.75rem;color:rgb(138,143,158);">%</div>
+                    </div>
+                    <div style="background:rgb(22,24,32);border:1px solid rgb(40,44,58);border-radius:16px;padding:24px 20px;text-align:center;">
+                      <div style="font-size:0.72rem;color:rgb(104,110,128);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Temp</div>
+                      <div style="font-size:2.2rem;font-weight:700;color:rgb(74,194,154);">98.6</div>
+                      <div style="font-size:0.75rem;color:rgb(138,143,158);">&deg;F</div>
+                    </div>
+                    <div style="background:rgb(22,24,32);border:1px solid rgb(40,44,58);border-radius:16px;padding:24px 20px;text-align:center;">
+                      <div style="font-size:0.72rem;color:rgb(104,110,128);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Steps</div>
+                      <div style="font-size:2.2rem;font-weight:700;color:rgb(100,160,255);">8,241</div>
+                      <div style="font-size:0.75rem;color:rgb(138,143,158);">today</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:24px;width:100%;background:rgb(22,24,32);border:1px solid rgb(40,44,58);border-radius:16px;padding:24px 20px;">
+                    <div style="font-size:0.72rem;color:rgb(104,110,128);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">ECG Monitor</div>
+                    <svg viewBox="0 0 600 60" preserveAspectRatio="none" style="width:100%;height:60px;">
+                      <path d="M0 30 L50 30 L55 30 L60 10 L65 50 L70 20 L75 40 L80 30 L150 30 L155 30 L160 10 L165 50 L170 20 L175 40 L180 30 L250 30 L255 30 L260 10 L265 50 L270 20 L275 40 L280 30 L350 30 L355 30 L360 10 L365 50 L370 20 L375 40 L380 30 L450 30 L455 30 L460 10 L465 50 L470 20 L475 40 L480 30 L550 30 L555 30 L560 10 L565 50 L570 20 L575 40 L580 30 L600 30" stroke="#c41e2a" stroke-width="2" fill="none" opacity="0.6">
+                        <animate attributeName="stroke-dashoffset" from="1200" to="0" dur="3s" repeatCount="indefinite"/>
+                      </path>
+                      <path d="M0 30 L50 30 L55 30 L60 10 L65 50 L70 20 L75 40 L80 30 L150 30 L155 30 L160 10 L165 50 L170 20 L175 40 L180 30 L250 30 L255 30 L260 10 L265 50 L270 20 L275 40 L280 30 L350 30 L355 30 L360 10 L365 50 L370 20 L375 40 L380 30 L450 30 L455 30 L460 10 L465 50 L470 20 L475 40 L480 30 L550 30 L555 30 L560 10 L565 50 L570 20 L575 40 L580 30 L600 30" stroke="#c41e2a" stroke-width="2" fill="none" opacity="0.6" stroke-dasharray="1200" stroke-dashoffset="1200">
+                        <animate attributeName="stroke-dashoffset" from="1200" to="0" dur="3s" repeatCount="indefinite"/>
+                      </path>
+                    </svg>
+                  </div>
+                  <div style="margin-top:20px;font-size:0.78rem;color:rgb(74,78,92);letter-spacing:1px;">O-Health Band v2.1 &bull; Clinical Grade Sportstech</div>
+                </div>
+              `;
+              // Re-init canvas
+              const c2 = document.getElementById('gate-canvas');
+              if (c2) {
+                const ctx2 = c2.getContext('2d');
+                c2.width = window.innerWidth;
+                c2.height = window.innerHeight;
+                let p2 = [];
+                const cnt = Math.min(80, Math.floor((c2.width * c2.height) / 15000));
+                for (let i = 0; i < cnt; i++) {
+                  p2.push({x:Math.random()*c2.width, y:Math.random()*c2.height, size:Math.random()*1.5+0.5, speedX:(Math.random()-0.5)*0.3, speedY:(Math.random()-0.5)*0.3, opacity:Math.random()*0.5+0.1});
+                }
+                function draw2() {
+                  ctx2.clearRect(0,0,c2.width,c2.height);
+                  p2.forEach(p => { ctx2.beginPath(); ctx2.arc(p.x,p.y,p.size,0,Math.PI*2); ctx2.fillStyle='rgba(212,162,74,'+p.opacity+')'; ctx2.fill(); p.x+=p.speedX; p.y+=p.speedY; if(p.x<0||p.x>c2.width)p.speedX*=-1; if(p.y<0||p.y>c2.height)p.speedY*=-1; });
+                  for(let i=0;i<p2.length;i++){for(let j=i+1;j<p2.length;j++){const dx=p2[i].x-p2[j].x,dy=p2[i].y-p2[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx2.beginPath();ctx2.moveTo(p2[i].x,p2[i].y);ctx2.lineTo(p2[j].x,p2[j].y);ctx2.strokeStyle='rgba(212,162,74,'+(0.06*(1-d/120))+')';ctx2.lineWidth=0.5;ctx2.stroke();}}}
+                  requestAnimationFrame(draw2);
+                }
+                draw2();
+              }
+              // Fade in dashboard
+              setTimeout(() => {
+                const dc = document.querySelector('.gate-content');
+                if (dc) { dc.style.opacity = '1'; dc.style.transform = 'translateY(0)'; }
+              }, 50);
+            }, 500);
+          }, 2000);
         }, 500);
       }, 1200);
     }
